@@ -18,29 +18,20 @@ jobs:
         python-version: '3.10'
 
     - name: 3. Install Python Dependencies
-      run: |
-        pip install ollama coverage
+      run: pip install openai coverage
 
-    - name: 4. Install Ollama Core
-      run: curl -fsSL https://ollama.com/install.sh | sh
+    - name: 4. Generate Tests via ChatGPT API
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      run: python prompt_framework.py
 
-    - name: 5. Start AI, Pull Model & Run Pipeline
-      run: |
-        # اولاما را روشن می‌کنیم و ۵ ثانیه صبر می‌کنیم تا کامل بالا بیاید
-        ollama serve &
-        sleep 5
-        
-        # مدل را دانلود می‌کنیم
-        ollama pull qwen2.5-coder:0.5b
-        
-        # بدون اینکه از این مرحله خارج شویم، پایتون‌ها را اجرا می‌کنیم تا اولاما زنده بماند!
-        python prompt_framework.py
-        python evaluate_tests.py
+    - name: 5. Evaluate Generated Tests
+      run: python evaluate_tests.py
 
-    - name: 6. Save Results and Upload Artifact
+    - name: 6. Save Final Results
       uses: actions/upload-artifact@v4
       with:
-        name: ai-evaluation-reports
+        name: final-chatgpt-reports
         path: |
           evaluation_summary.json
           generated_tests/
