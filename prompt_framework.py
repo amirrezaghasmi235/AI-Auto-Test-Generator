@@ -4,7 +4,7 @@ import time
 from openai import OpenAI
 
 # 1. Setup paths and directories
-DATASET_PATH = "functions.json"  # استفاده از دیتاست ۱۰۰ تایی اصلی!
+DATASET_PATH = "functions.json"  # استفاده از دیتاست ۱۰۰ تایی اصلی
 OUTPUT_DIR = "generated_tests"
 STRATEGIES = ["baseline", "structured", "cot", "multistep"]
 
@@ -17,11 +17,11 @@ if not api_key:
     print("[ERROR] OPENAI_API_KEY not found in environment variables!")
     exit()
 
-# <<< نکته بسیار مهم >>>
-# اگر سایت ایرانی که از آن خرید کردی، یک آدرس Base URL به تو داده (مثلا https://api.site.ir/v1)
-# علامت # را از ابتدای خط پایین بردار و آدرس سایت را داخلش بگذار و خط بعدی‌اش را پاک کن.
-# client = OpenAI(api_key=api_key, base_url="https://api.your-iranian-site.com/v1")
-client = OpenAI(api_key=api_key) 
+# اتصال به سرور واسط ایرانی (GapGPT) برای دور زدن تحریم‌ها
+client = OpenAI(
+    api_key=api_key,
+    base_url="https://api.gapgpt.app/v1"
+) 
 
 # 3. Define Prompts
 def get_prompt(strategy, code, entry_point):
@@ -44,7 +44,7 @@ if not os.path.exists(DATASET_PATH):
 with open(DATASET_PATH, "r", encoding="utf-8") as f:
     functions = json.load(f)
 
-print(f"[START] Starting fast generation for {len(functions)} functions via ChatGPT...")
+print(f"[START] Starting fast generation for {len(functions)} functions via ChatGPT (GapGPT Proxy)...")
 
 # 5. Process loop
 for index, func in enumerate(functions):
